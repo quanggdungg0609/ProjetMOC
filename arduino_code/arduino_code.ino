@@ -6,6 +6,8 @@
 #define MESURE_TIMEOUT 25000UL
 #define SOUND_SPEED 340/1000
 
+
+
 // etat
 bool panne = false;
 bool marche = true;
@@ -52,7 +54,7 @@ void loop() {
     String distance_str = String(distance,3);
     String message = "distance_"+distance_str+"_cm";
 
-    Serial.println(message);
+    
     Serial1.println(message);
   }
   if (marche){
