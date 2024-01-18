@@ -3,7 +3,7 @@
 //#include <FirebaseESP32.h> // lecture Firebase
 #include <addons/TokenHelper.h>
 #include <addons/RTDBHelper.h>
-
+#include "time.h"
 
 
 // WIFI setting
@@ -16,6 +16,11 @@
 #define DATABASE_URL "https://projet-lse-group-2-default-rtdb.europe-west1.firebasedatabase.app"
 #define USER_EMAIL "groupe2@mail.com"
 #define USER_PASSWORD "123456"
+
+// ntp setting for get time
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 3600 * 1;
+const int   daylightOffset_sec = 3600 * 0;
 
 FirebaseData fbdo; // données
 FirebaseConfig config; // config
@@ -49,21 +54,40 @@ void setup() {
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
 
-  // Register to Firebase
+  // Register to Firebase si n'a pas registe
   Serial.println("Verifie data....");
-  if(isUUIDExist()){
+  if(isPatchExist(uuid)){
     Serial.println("Exist");
   }else{
     Serial.println("La carte n'existe pas sur la base de donnee");
     addDeviceToFireBase();
   }
 
+  // mise a jour la date commencer fonction
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    Serial.println("Failed to obtain time");
+    String text = "NaN";
+    if(Firebase.RTDB.setString(&fbdo,"/"+uuid+"/date-commencer",text)){
+      Serial.println("Date de debut de mise en service ajouter");
+    }
+  }else{
+    char buffer[50]; // buffer pour sauvegar le temp actuel
+    sprintf(buffer, "%04d-%02d-%02d %02d:%02d:%02d",
+          timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday,
+          timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+
+    if(Firebase.RTDB.setString(&fbdo,"/"+uuid+"/date-commencer",buffer)){
+      Serial.println("Date de debut de mise en service ajouter");
+    }
+  }
+  
+ 
 
 }
 String date;
 void loop() {
-  // put your main code here, to run repeatedly:
-
   /*
   if (Firebase.ready()) {
    /*
@@ -104,8 +128,8 @@ bool verifyString(String msg, String mot){
   return false;
 }
 
-bool isUUIDExist(){
-  String path ="/"+uuid;
+bool isPatchExist(String p){
+  String path ="/"+p;
   if(Firebase.RTDB.get(&fbdo, path)){
     return true;
   }else{
@@ -119,7 +143,7 @@ void addDeviceToFireBase(){
   FirebaseJson data;
   data.add("temp","");
   data.add("dist","");
-
+  updateDevice.add("date-commencer","");
   updateDevice.add("model", model);
   updateDevice.add("num-serie",model+"-"+uuid);
   updateDevice.add("etat-capteur","ON");
