@@ -104,34 +104,13 @@ void setup() {
 void loop() {
   if (Firebase.ready()) {
     if(Serial2.available()>0){
-        String msg=Serial2.readStringUntil('\n');
-        if (msg.equals("ON")){
-      
-          if(Firebase.RTDB.setString(&fbdo,"/"+ uuid +"/etat-capteur","ON")){
-            Serial.println("Update Etat");
-          }
-        }
-        if (msg.equals("OFF")){
-          if(Firebase.RTDB.setString(&fbdo,"/"+ uuid+ "/etat-capteur","OFF")){
-            Serial.println("Update Etat");
-          }
-        }
-
-        // si la carte arduino envoyer la distance
-        if (verifyString(msg, "distance")){
-          String data =processData(msg);
-          if(data != ""){
-            // mise a jour data sur firebase
-            if(Firebase.RTDB.setString(&fbdo,"/"+ uuid +"/data/dist",data)){
-              Serial.println("update distance");
-            }
-          }        
-        }
-      }
+      String msg=Serial2.readStringUntil('\n');
+      handleMsg(msg);
+    }
   }
 }
 
-
+///// Need to Improvement
 // gerer le status quand etat capteur est changer sur firebase
 void streamCallback(FirebaseStream data){
   printResult(data); // see addons/RTDBHelper.h
@@ -146,6 +125,9 @@ void streamTimeoutCallback(bool timeout){
     Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
   }
 }
+/////////////////////////////////
+
+
 
 bool verifyString(String str, String mot){
   /*
@@ -176,7 +158,33 @@ bool isPatchExist(String p){
   }
 }
 
+void handleMsg(String msg){
+  /*
+  Gerer les message ont recus par capteur
+  */
+  if (msg.equals("ON")){
+      if(Firebase.RTDB.setString(&fbdo,"/"+ uuid +"/etat-capteur","ON")){
+        Serial.println("Update Etat");
+      }
+    }
 
+  if (msg.equals("OFF")){
+    if(Firebase.RTDB.setString(&fbdo,"/"+ uuid+ "/etat-capteur","OFF")){
+      Serial.println("Update Etat");
+    }
+  }
+
+  // si la carte arduino envoyer la distance
+  if (verifyString(msg, "distance")){
+    String data =processData(msg);
+    if(data != ""){
+      // mise a jour data sur firebase
+      if(Firebase.RTDB.setString(&fbdo,"/"+ uuid +"/data/dist",data)){
+        Serial.println("update distance");
+      }
+    }        
+  }
+}
 
 void addDeviceToFireBase(){
   /*
