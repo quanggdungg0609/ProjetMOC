@@ -3,6 +3,7 @@ package com.grp2.projetmoc;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -57,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
                             String uid = mAuth.getUid();
                             Log.i("TAG", "OK");
                             Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+                            // Ajoutez les données de l'utilisateur à l'Intent
+                            intent.putExtra("userId", user.getUid());
+
+                            // Démarrez la nouvelle activité
+                            startActivity(intent);
 
                         } else {
                             Log.w("TAG", "échoué", task.getException());
