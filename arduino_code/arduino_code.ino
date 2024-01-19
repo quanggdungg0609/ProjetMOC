@@ -29,15 +29,18 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
+
   // change Etat
   if(digitalRead(BOUTON_PIN)==0){
     marche = !marche;
     //envoyer message a ESP32 pour etat du systeme
     if(!marche){
       Serial1.write("OFF\n");
+      Serial1.flush();
       //Serial.println("OFF");
     }else{
       Serial1.write("ON\n");
+      Serial1.flush();
       //Serial.println("ON");
     }
   }
@@ -52,17 +55,18 @@ void loop() {
     long mesure = pulseIn(ECHO_PIN,1,MESURE_TIMEOUT);
     float distance = mesure/2.0 * SOUND_SPEED / 100;
     String distance_str = String(distance,3);
-    String message = "distance_"+distance_str+"_cm";
+    String message = "distance_"+distance_str+"_cm\n";
 
     
     Serial1.println(message);
+    Serial1.flush();
   }
   if (marche){
     digitalWrite(LED_PIN, HIGH);
   }else{
     digitalWrite(LED_PIN, LOW);
   }
-  delay(500);
+  delay(1000);
 }
 
 
