@@ -5,12 +5,11 @@
 #include <addons/RTDBHelper.h>
 #include "time.h"
 
-//TODO: Gerer la callback pour gerer etat la capteur quand etat sur firebase est changee
 
 
 // WIFI setting
-#define SSID "Extend"
-#define MDP "Dinhsonque"
+#define SSID "iPhone"
+#define MDP "sonia2001"
 
 
 // Firebase Setting

@@ -78,6 +78,7 @@
             android:background="@drawable/login_button"
             android:elevation="5dp"
             android:maxWidth="80dp"
+            android:onClick="auth"
             android:paddingLeft="30dp"
             android:paddingTop="10dp"
             android:paddingRight="30dp"
