@@ -1,18 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LayoutMainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#99BC85"
+    android:elevation="3dp"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
     tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="2dp"
+        android:text="Mail"
+        android:textColor="#E1F0DA" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <EditText
+        android:id="@+id/edtMail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/text_input"
+        android:elevation="3dp"
+        android:ems="10"
+        android:hint="Entrez votre mail..."
+        android:inputType="text"
+        android:padding="10dp"
+        android:paddingStart="10dp"
+        android:textColor="#84A671" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="2dp"
+        android:text="Mot de passe"
+
+        android:textColor="#E1F0DA" />
+
+    <EditText
+        android:id="@+id/edtMDP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/text_input"
+        android:elevation="3dp"
+        android:ems="10"
+        android:hint="Entrer votre mot de passe ..."
+        android:inputType="text"
+        android:padding="10dp"
+        android:paddingStart="10dp"
+        android:textColor="#84A671" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal|center_vertical"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnLogin"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:width="80dp"
+            android:background="@drawable/login_button"
+            android:elevation="5dp"
+            android:maxWidth="80dp"
+            android:paddingLeft="30dp"
+            android:paddingTop="10dp"
+            android:paddingRight="30dp"
+            android:paddingBottom="10dp"
+            android:text="Login"
+            android:textColor="#99BC85"
+            android:textIsSelectable="false"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>
