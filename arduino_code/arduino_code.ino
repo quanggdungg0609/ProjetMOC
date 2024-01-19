@@ -3,8 +3,6 @@
 #define TRIG_PIN 9
 #define ECHO_PIN 10
 
-#define MESURE_TIMEOUT 25000UL
-#define SOUND_SPEED 340/1000
 
 
 
@@ -12,6 +10,7 @@
 bool panne = false;
 bool marche = true;
 
+long duration,cm;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -21,6 +20,7 @@ void setup() {
   // register le bouton
   pinMode(BOUTON_PIN, INPUT_PULLUP);
   // register capteur ultrason
+
   pinMode(TRIG_PIN,OUTPUT);
   digitalWrite(TRIG_PIN,LOW);
   pinMode(ECHO_PIN,INPUT);
@@ -28,7 +28,20 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  if(Serial1.available()){
+    String msg = Serial1.readStringUntil("\n");
+    msg.trim();
+    if(msg.equals("ON")){
+      Serial.println(msg);
+      marche = true;
+    }
+    if (msg.equals("OFF")){
+      Serial.println(msg);
+      marche = false;
+    }
+  }
 
+  
 
   // change Etat
   if(digitalRead(BOUTON_PIN)==0){
@@ -44,22 +57,35 @@ void loop() {
       //Serial.println("ON");
     }
   }
-
   
 
+
   if (!panne && marche){
-    digitalWrite(TRIG_PIN,HIGH);
+    // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
+    // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+    digitalWrite(TRIG_PIN, LOW);
+    delayMicroseconds(5);
+    digitalWrite(TRIG_PIN, HIGH);
     delayMicroseconds(10);
-    digitalWrite(TRIG_PIN,LOW);
-
-    long mesure = pulseIn(ECHO_PIN,1,MESURE_TIMEOUT);
-    float distance = mesure/2.0 * SOUND_SPEED / 100;
-    String distance_str = String(distance,3);
-    String message = "distance_"+distance_str+"_cm\n";
-
+    digitalWrite(TRIG_PIN, LOW);
+  
+    // Read the signal from the sensor: a HIGH pulse whose
+    // duration is the time (in microseconds) from the sending
+    // of the ping to the reception of its echo off of an object.
+    pinMode(ECHO_PIN, INPUT);
+    duration = pulseIn(ECHO_PIN, HIGH);
+    Serial.println(duration);
+    cm = duration/29/2;
     
-    Serial1.println(message);
-    Serial1.flush();
+    // si object est <30cm mise a jour sur la base donnee
+    if(cm <30){
+      String distance_str = String(cm);
+      String message = "distance_"+distance_str+"_cm\n";
+      Serial.println(message);
+      Serial1.println(message);
+      Serial1.flush();
+    }
+    
   }
   if (marche){
     digitalWrite(LED_PIN, HIGH);
@@ -67,10 +93,4 @@ void loop() {
     digitalWrite(LED_PIN, LOW);
   }
   delay(1000);
-}
-
-
-
-void changeEtat(void){
-  marche=!marche;
 }

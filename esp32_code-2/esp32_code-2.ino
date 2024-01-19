@@ -28,11 +28,14 @@ FirebaseData stream; //stream
 FirebaseData fbdo; // données
 FirebaseConfig config; // config
 FirebaseAuth auth; 
+
+// UUID et model de la carte
 String uuid="2bd6419e-c040-4310-abcf-2e7226820d2f";
 String model="ESP32-ARDUINO-LEONARDO";
 
 bool etatOnFirebase;
 bool etatCapteur;
+bool etatChanged;
 
 void setup() {
   // put your setup code here, to run once:
@@ -97,12 +100,23 @@ void setup() {
   // Mise en service 
   if(Firebase.RTDB.setString(&fbdo,"/"+ uuid +"/etat-capteur","ON")){
     Serial.println("Mise en service");
+    etatCapteur=true;
   }
-
 }
 
 void loop() {
   if (Firebase.ready()) {
+    // si etat-capteur sur firebase est change
+    if (etatChanged){
+      if (etatOnFirebase){
+        Serial.println("ON");
+        Serial2.println("ON");
+      }else{
+        Serial.println("OFF");
+        Serial2.println("OFF");
+      }
+      etatChanged = false;
+    }
     if(Serial2.available()>0){
       String msg=Serial2.readStringUntil('\n');
       handleMsg(msg);
@@ -110,11 +124,22 @@ void loop() {
   }
 }
 
+
+
+
+
+
 ///// Need to Improvement
 // gerer le status quand etat capteur est changer sur firebase
 void streamCallback(FirebaseStream data){
-  printResult(data); // see addons/RTDBHelper.h
-  Serial.println();
+  // Due to limited of stack memory, do not perform any task that used large memory here especially starting connect to server.
+  // Just set this flag and check it status later.
+  if(data.stringData() == "ON"){
+    etatOnFirebase=true;
+  }else{
+    etatOnFirebase =false;
+  }
+  etatChanged = true;
 }
 
 void streamTimeoutCallback(bool timeout){
@@ -179,8 +204,8 @@ void handleMsg(String msg){
     String data =processData(msg);
     if(data != ""){
       // mise a jour data sur firebase
-      if(Firebase.RTDB.setString(&fbdo,"/"+ uuid +"/data/dist",data)){
-        Serial.println("update distance");
+      if(!Firebase.RTDB.setString(&fbdo,"/"+ uuid +"/data/dist",data)){
+        Serial.println("Ne peut pas mise a jour la distance");
       }
     }        
   }
@@ -197,7 +222,7 @@ void addDeviceToFireBase(){
   data.add("dist","");
   updateDevice.add("date-commencer","");
   updateDevice.add("model", model);
-  updateDevice.add("num-serie",model+"-"+uuid);
+  updateDevice.add("num-serie",model+"."+uuid);
   updateDevice.add("etat-capteur","ON");
   updateDevice.add("etat-hardware","OK");
   updateDevice.add("data",data);
@@ -208,8 +233,8 @@ void addDeviceToFireBase(){
 }
 
 String processData(const String data){
-  int startPos = data.indexOf('_') + 1; // Tìm vị trí bắt đầu của X
-  int endPos = data.indexOf('_', startPos); // Tìm vị trí kết thúc của X
+  int startPos = data.indexOf('_') + 1; 
+  int endPos = data.indexOf('_', startPos); 
 
   if (startPos != -1 && endPos != -1) {
     return data.substring(startPos, endPos);
