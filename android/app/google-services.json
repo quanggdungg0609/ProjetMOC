@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "335124582202",
+    "firebase_url": "https://projet-lse-group-2-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "projet-lse-group-2",
+    "storage_bucket": "projet-lse-group-2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335124582202:android:8f8a0a57958521472b8a03",
+        "android_client_info": {
+          "package_name": "com.grp2.projetmoc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBme31n7f1vd8IpTcO5Lmv50aqFh_VClnk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
