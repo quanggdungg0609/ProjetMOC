@@ -53,24 +53,26 @@ void loop() {
     
     // change Etat
   if (digitalRead(BOUTON_PIN) == 0) {
-    // Kiểm tra xem nút có được nhấn trong khoảng thời gian reset không
+    // verifie si est dans le temps reset
     if (millis() - lastButtonPressTime < buttonResetTime) {
-      // Nếu được nhấn trong khoảng thời gian reset, đặt lại sự cố
+      // Si le bouton est appuye pendant le temps de reset
       Serial.println("Resetting...");
       marche = true;
       panne = false;
       Serial1.write("RESET\n");
     } else {
       marche = !marche;
-      // Gửi thông điệp đến ESP32 để cập nhật trạng thái hệ thống
+      // Envoie message a esp32 pour mise jour etat capteur
       if (!marche) {
+        Serial.println("OFF...");
         Serial1.write("OFF\n");
         Serial1.flush();
       } else {
+        Serial.println("ON...");
         Serial1.write("ON\n");
         Serial1.flush();
       }
-      // Ghi thời gian nút được nhấn lần cuối
+      // sauvegard le dernier moment appuye butoon
       lastButtonPressTime = millis();
     }
   }

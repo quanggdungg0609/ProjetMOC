@@ -44,15 +44,13 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             user = mAuth.getCurrentUser();
                             String uid = mAuth.getUid();
-                            Log.i("TAG", "OK");
                             Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(MainActivity.this, Main2Activity.class);
                             // Ajoutez les données de l'utilisateur à l'Intent
-                            intent.putExtra("userId", user.getUid());
-
+                            intent.putExtra("userId", user.getEmail());
                             // Démarrez la nouvelle activité
                             startActivity(intent);
-
+                            finish();
                         } else {
                             Log.w("TAG", "échoué", task.getException());
                             Toast.makeText(getApplicationContext(), "échoué!", Toast.LENGTH_SHORT).show();

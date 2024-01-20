@@ -19,19 +19,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class Main2Activity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
+
     FirebaseDatabase db=FirebaseDatabase.getInstance("https://projet-lse-group-2-default-rtdb.europe-west1.firebasedatabase.app");
     DatabaseReference ref=db.getReference("2bd6419e-c040-4310-abcf-2e7226820d2f");
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        String userId = getIntent().getStringExtra("userId");
-        // Initialisez Firebase
-        mAuth = FirebaseAuth.getInstance(); // peut etre verifier
+
+
         TextView tvModel = findViewById(R.id.tvModel);
         TextView tvId = findViewById(R.id.tvID);
         TextView tvDate = findViewById(R.id.tvDateMO);
@@ -39,10 +36,18 @@ public class Main2Activity extends AppCompatActivity {
         TextView tvEtatHardWare = findViewById(R.id.tvEtatHW);
         TextView tvDistance = findViewById(R.id.tvDist);
         TextView tvTemp = findViewById(R.id.tvTemp);
+        TextView tvUserName = findViewById(R.id.tvMail);
 
         Button btnOn = findViewById(R.id.btnOn);
         Button btnOff = findViewById(R.id.btnOff);
         ImageButton btnDisconnect = findViewById(R.id.btnLogout);
+
+        // Occuper la valeur de Activity 1
+        Intent intent = getIntent();
+        if (intent != null) {
+            String userId = intent.getStringExtra("userId");
+            tvUserName.setText(userId);
+        }
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -69,6 +74,14 @@ public class Main2Activity extends AppCompatActivity {
 
                     if(key.equals("etat-hardware")){
                         tvEtatHardWare.setText("État HW: "+value);
+                        if (value.equals("PANNE")){
+                            btnOn.setEnabled(false);
+                            btnOff.setEnabled(false);
+                        }
+                        if(value.equals("OK")){
+                            btnOn.setEnabled(true);
+                            btnOff.setEnabled(true);
+                        }
                     }
                 }
 
@@ -99,6 +112,8 @@ public class Main2Activity extends AppCompatActivity {
 
             }
         });
+
+
 
         btnOn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,9 +148,11 @@ public class Main2Activity extends AppCompatActivity {
 
 
     public void logout(){
+        FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(Main2Activity.this, MainActivity.class);
         // Ajoutez les données de l'utilisateur à l'Intent
         // Démarrez la nouvelle activité
         startActivity(intent);
+        finish();
     }
 }
