@@ -4,7 +4,10 @@
 #include <addons/TokenHelper.h>
 #include <addons/RTDBHelper.h>
 #include "time.h"
+#include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
 
+#include "index.h"
 
 
 // WIFI setting
@@ -32,13 +35,14 @@ FirebaseAuth auth;
 String uuid="2bd6419e-c040-4310-abcf-2e7226820d2f";
 String model="ESP32-ARDUINO-LEONARDO";
 
+// etat capteur
 bool etatOnFirebase;
 bool etatCapteur;
 bool etatChanged;
-
-
 int etatHardwarePanne = 0;
- 
+int etatMessageCount = 0;
+
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -210,9 +214,9 @@ void handleMsg(String msg){
     }
   }
   if(msg.equals("RESET")){
-    if(Firebase.RTDB.setString(&fbdo,"/"+ uuid+ "/etat-hardware","OK")){
-        Serial.println("Capteur reseted, update on database...");
-    }
+    etatHardwarePanne=0;
+    if(Firebase.RTDB.setString(&fbdo,"/"+ uuid+ "/etat-hardware","OK")){}
+    if(Firebase.RTDB.setString(&fbdo,"/"+ uuid+ "/etat-capteur","ON")){}
   }
 
   // si la carte arduino envoyer la distance
@@ -256,3 +260,7 @@ String processData(const String data){
     return data.substring(startPos, endPos);
   }
 }
+
+
+
+
