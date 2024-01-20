@@ -5,7 +5,6 @@
 #include <addons/RTDBHelper.h>
 #include "time.h"
 
-//TODO: Gerer la callback pour gerer etat la capteur quand etat sur firebase est changee
 
 
 // WIFI setting
@@ -37,6 +36,9 @@ bool etatOnFirebase;
 bool etatCapteur;
 bool etatChanged;
 
+
+int etatHardwarePanne = 0;
+ 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -196,6 +198,20 @@ void handleMsg(String msg){
   if (msg.equals("OFF")){
     if(Firebase.RTDB.setString(&fbdo,"/"+ uuid+ "/etat-capteur","OFF")){
       Serial.println("Update Etat");
+    }
+  }
+
+  if(msg.equals("PANNE")){
+    etatHardwarePanne++;
+    if(etatHardwarePanne == 1){
+      if(Firebase.RTDB.setString(&fbdo,"/"+ uuid+ "/etat-hardware","PANNE")){
+        Serial.println("Capteur en panne, update on database...");
+      }
+    }
+  }
+  if(msg.equals("RESET")){
+    if(Firebase.RTDB.setString(&fbdo,"/"+ uuid+ "/etat-hardware","OK")){
+        Serial.println("Capteur reseted, update on database...");
     }
   }
 
